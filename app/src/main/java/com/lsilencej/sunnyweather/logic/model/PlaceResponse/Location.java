@@ -1,4 +1,4 @@
-package com.lsilencej.sunnyweather.logic.model;
+package com.lsilencej.sunnyweather.logic.model.PlaceResponse;
 
 public class Location {
 

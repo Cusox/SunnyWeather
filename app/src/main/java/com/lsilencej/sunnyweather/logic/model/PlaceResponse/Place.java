@@ -1,4 +1,4 @@
-package com.lsilencej.sunnyweather.logic.model;
+package com.lsilencej.sunnyweather.logic.model.PlaceResponse;
 
 import com.google.gson.annotations.SerializedName;
 

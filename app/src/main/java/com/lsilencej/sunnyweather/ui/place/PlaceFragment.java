@@ -1,5 +1,6 @@
 package com.lsilencej.sunnyweather.ui.place;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,11 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lsilencej.sunnyweather.R;
-import com.lsilencej.sunnyweather.logic.model.PlaceResponse;
+import com.lsilencej.sunnyweather.logic.model.PlaceResponse.Place;
+import com.lsilencej.sunnyweather.logic.model.PlaceResponse.PlaceResponse;
+import com.lsilencej.sunnyweather.ui.weather.WeatherActivity;
 
 public class PlaceFragment extends Fragment {
 
-    public PlaceViewModel placeViewModel;
+    public static PlaceViewModel placeViewModel;
     private PlaceAdapter placeAdapter;
     private View view;
 
@@ -38,6 +41,18 @@ public class PlaceFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (placeViewModel.isPlaceSaved()) {
+            Place place = placeViewModel.getSavedPlace();
+            Intent intent = new Intent(getContext(), WeatherActivity.class);
+            intent.putExtra("location_lng", place.getLocation().getLng());
+            intent.putExtra("location_lat", place.getLocation().getLat());
+            intent.putExtra("place_name", place.getName());
+            startActivity(intent);
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
+            return;
+        }
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
         EditText searchPlaceEdit = (EditText) view.findViewById(R.id.searchPlaceEdit);

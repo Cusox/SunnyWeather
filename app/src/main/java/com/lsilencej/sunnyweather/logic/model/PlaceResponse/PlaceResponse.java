@@ -1,4 +1,4 @@
-package com.lsilencej.sunnyweather.logic.model;
+package com.lsilencej.sunnyweather.logic.model.PlaceResponse;
 
 import java.util.List;
 
@@ -7,11 +7,6 @@ public class PlaceResponse {
     private String status;
     private String error = null;
     private List<Place> places;
-
-    public PlaceResponse(String status, List<Place> places) {
-        this.status = status;
-        this.places = places;
-    }
 
     public PlaceResponse(String status, String error, List<Place> places) {
         this.status = status;

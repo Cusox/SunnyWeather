@@ -1,7 +1,7 @@
 package com.lsilencej.sunnyweather.logic.network;
 
 import com.lsilencej.sunnyweather.SunnyWeatherApplication;
-import com.lsilencej.sunnyweather.logic.model.PlaceResponse;
+import com.lsilencej.sunnyweather.logic.model.PlaceResponse.PlaceResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
