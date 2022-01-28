@@ -50,15 +50,25 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
             public void onClick(View view) {
                 int position = holder.getAbsoluteAdapterPosition();
                 Place place = placeList.get(position);
-                Intent intent = new Intent(parent.getContext(), WeatherActivity.class);
-                intent.putExtra("location_lng", place.getLocation().getLng());
-                intent.putExtra("location_lat", place.getLocation().getLat());
-                intent.putExtra("place_name", place.getName());
-                placeFragment.placeViewModel.savePlace(place);
-                placeFragment.startActivity(intent);
-                if (placeFragment.getActivity() != null) {
-                    placeFragment.getActivity().finish();
+                Activity activity = placeFragment.getActivity();
+                if (activity instanceof WeatherActivity) {
+                    WeatherActivity weatherActivity = (WeatherActivity) activity;
+                    weatherActivity.getDrawerLayout().closeDrawers();
+                    weatherActivity.getViewModel().setLocationLng(place.getLocation().getLng());
+                    weatherActivity.getViewModel().setLocationLat(place.getLocation().getLat());
+                    weatherActivity.getViewModel().setPlaceName(place.getName());
+                    weatherActivity.refreshWeather();
+                } else {
+                    Intent intent = new Intent(parent.getContext(), WeatherActivity.class);
+                    intent.putExtra("location_lng", place.getLocation().getLng());
+                    intent.putExtra("location_lat", place.getLocation().getLat());
+                    intent.putExtra("place_name", place.getName());
+                    placeFragment.startActivity(intent);
+                    if (placeFragment.getActivity() != null) {
+                        placeFragment.getActivity().finish();
+                    }
                 }
+                placeFragment.placeViewModel.savePlace(place);
             }
         });
         return holder;

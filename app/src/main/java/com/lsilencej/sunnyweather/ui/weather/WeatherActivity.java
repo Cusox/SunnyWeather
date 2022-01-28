@@ -1,14 +1,22 @@
 package com.lsilencej.sunnyweather.ui.weather;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -42,6 +50,16 @@ public class WeatherActivity extends AppCompatActivity {
     TextView ultraviolet;
     TextView carWashing;
     ScrollView weatherLayout;
+    SwipeRefreshLayout swipeRefresh;
+    DrawerLayout drawerLayout;
+
+    public DrawerLayout getDrawerLayout() {
+        return drawerLayout;
+    }
+
+    public WeatherViewModel getViewModel() {
+        return weatherViewModel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +80,7 @@ public class WeatherActivity extends AppCompatActivity {
         ultraviolet = (TextView) findViewById(R.id.ultravioletText);
         carWashing = (TextView) findViewById(R.id.carWashingText);
         weatherLayout = (ScrollView) findViewById(R.id.weatherLayout);
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         if (weatherViewModel.getLocationLng().isEmpty()) {
             weatherViewModel.setLocationLng(getIntent().getStringExtra("location_lng"));
         }
@@ -80,9 +99,47 @@ public class WeatherActivity extends AppCompatActivity {
                     Toast.makeText(WeatherActivity.this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show();
                     Log.e("WeatherActivity", weather.getError());
                 }
+                swipeRefresh.setRefreshing(false);
             }
         });
-        weatherViewModel.refreshWeather(weatherViewModel.getLocationLng(), weatherViewModel.getLocationLat());
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        refreshWeather();
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshWeather();
+            }
+        });
+        Button nav = (Button) findViewById(R.id.nav);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        nav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(drawerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
     private void showWeatherInfo(Weather weather) {
@@ -120,5 +177,10 @@ public class WeatherActivity extends AppCompatActivity {
         ultraviolet.setText(lifeIndex.getUltraviolet().get(0).getDesc());
         carWashing.setText(lifeIndex.getCarWashing().get(0).getDesc());
         weatherLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void refreshWeather() {
+        weatherViewModel.refreshWeather(weatherViewModel.getLocationLng(), weatherViewModel.getLocationLat());
+        swipeRefresh.setRefreshing(true);
     }
 }
